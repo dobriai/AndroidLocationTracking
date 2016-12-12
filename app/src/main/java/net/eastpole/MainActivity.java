@@ -17,8 +17,10 @@
 package net.eastpole;
 
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.os.StrictMode;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +35,10 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -50,7 +56,7 @@ import java.util.Date;
  * uses Google Play services for authentication, see
  * https://github.com/googlesamples/android-google-accounts/tree/master/QuickStart.
  */
-public class MainActivity extends ActionBarActivity implements
+public class MainActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
 
     protected static final String TAG = "location-updates-sample";
@@ -87,6 +93,10 @@ public class MainActivity extends ActionBarActivity implements
      */
     protected Location mCurrentLocation;
 
+    // Special alias to the host loopback interface (i.e., 127.0.0.1 on the development machine):
+    protected static final String UDP_HOST_NAME = "10.0.2.2";
+    protected static final int mPort = 11000;   // Arbitrary port
+
     // UI Widgets.
     protected Button mStartUpdatesButton;
     protected Button mStopUpdatesButton;
@@ -114,6 +124,10 @@ public class MainActivity extends ActionBarActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        // Without this, any attempt to use sockets in the Main Thread will throw!
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         // Locate the UI widgets.
         mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
@@ -274,6 +288,21 @@ public class MainActivity extends ActionBarActivity implements
                 mLastUpdateTime));
     }
 
+    private void sendUpdate2Server() {
+        try {
+            InetAddress addr = InetAddress.getByName(UDP_HOST_NAME);
+            DatagramSocket sock = new DatagramSocket();
+            String msg = String.format("%s;%s;%s;", mLastUpdateTime,
+                    mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.length(), addr, mPort);
+            sock.send(packet);
+            sock.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, R.string.bad_host, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * Removes location updates from the FusedLocationApi.
      */
@@ -317,7 +346,7 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onStop() {
         mGoogleApiClient.disconnect();
-        
+
         super.onStop();
     }
 
@@ -342,6 +371,7 @@ public class MainActivity extends ActionBarActivity implements
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             updateUI();
+            sendUpdate2Server();
         }
 
         // If the user presses the Start Updates button before GoogleApiClient connects, we set
@@ -362,6 +392,7 @@ public class MainActivity extends ActionBarActivity implements
         updateUI();
         Toast.makeText(this, getResources().getString(R.string.location_updated_message),
                 Toast.LENGTH_SHORT).show();
+        sendUpdate2Server();
     }
 
     @Override

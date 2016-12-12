@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 <resources>
-    <string name="app_name">Getting Location Updates</string>
+    <string name="app_name">Android Location Tracking</string>
 
     <string name="latitude_label">Latitude</string>
     <string name="longitude_label">Longitude</string>
@@ -24,4 +24,5 @@
     <string name="start_updates">Start updates</string>
     <string name="stop_updates">Stop updates</string>
     <string name="location_updated_message">Location updated</string>
+    <string name="bad_host">No connection to host!</string>
 </resources>
