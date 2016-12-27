@@ -70,13 +70,15 @@ public class MainActivity extends AppCompatActivity implements
      * The fastest rate for active location updates. Exact. Updates will never be more frequent
      * than this value.
      */
-    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
-            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 2000;
 
     // Keys for storing activity state in the Bundle.
     protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
     protected final static String LOCATION_KEY = "location-key";
     protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
+
+    // This will become a real user in later revisions
+    protected String mUserId = "GM";
 
     /**
      * Provides the entry point to Google Play services.
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Time when the location was updated represented as a String.
      */
-    protected String mLastUpdateTime;
+    protected Long mLastUpdateTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -142,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements
         mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
 
         mRequestingLocationUpdates = false;
-        mLastUpdateTime = "";
+        mLastUpdateTime = 0L;
 
         // Update values using data stored in the Bundle.
         updateValuesFromBundle(savedInstanceState);
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements
 
             // Update the value of mLastUpdateTime from the Bundle and update the UI.
             if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
-                mLastUpdateTime = savedInstanceState.getString(LAST_UPDATED_TIME_STRING_KEY);
+                mLastUpdateTime = savedInstanceState.getLong(LAST_UPDATED_TIME_STRING_KEY);
             }
             updateUI();
         }
@@ -285,14 +287,14 @@ public class MainActivity extends AppCompatActivity implements
         mLongitudeTextView.setText(String.format("%s: %f", mLongitudeLabel,
                 mCurrentLocation.getLongitude()));
         mLastUpdateTimeTextView.setText(String.format("%s: %s", mLastUpdateTimeLabel,
-                mLastUpdateTime));
+                DateFormat.getTimeInstance().format(new Date(mLastUpdateTime))));
     }
 
     private void sendUpdate2Server() {
         try {
             InetAddress addr = InetAddress.getByName(UDP_HOST_NAME);
             DatagramSocket sock = new DatagramSocket();
-            String msg = String.format("%s;%s;%s;", mLastUpdateTime,
+            String msg = String.format("[\"%s\",%d,%s,%s]", mUserId, mLastUpdateTime/1000,
                     mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
             DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.length(), addr, mPort);
             sock.send(packet);
@@ -369,9 +371,11 @@ public class MainActivity extends AppCompatActivity implements
         // is displayed as the activity is re-created.
         if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-            updateUI();
-            sendUpdate2Server();
+            if (mCurrentLocation != null) {
+                mLastUpdateTime = System.currentTimeMillis();
+                updateUI();
+                sendUpdate2Server();
+            }
         }
 
         // If the user presses the Start Updates button before GoogleApiClient connects, we set
@@ -388,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        mLastUpdateTime = System.currentTimeMillis();
         updateUI();
         Toast.makeText(this, getResources().getString(R.string.location_updated_message),
                 Toast.LENGTH_SHORT).show();
@@ -417,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
-        savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, mLastUpdateTime);
+        savedInstanceState.putLong(LAST_UPDATED_TIME_STRING_KEY, mLastUpdateTime);
         super.onSaveInstanceState(savedInstanceState);
     }
 }
