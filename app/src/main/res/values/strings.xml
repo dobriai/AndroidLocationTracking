@@ -21,6 +21,7 @@
     <string name="longitude_label">Longitude</string>
     <string name="last_update_time_label">Last update time</string>
     <string name="accuracy_label">Accuracy</string>
+    <string name="provider_label">Provider</string>
     <string name="altitude_label">Altitude</string>
     <string name="speed_label">Speed</string>
     <string name="bearing_label">Bearing</string>

@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements
     protected Button mStopUpdatesButton;
 
     // UI Widgets: TextView-s
-    protected enum WigetK { LONGITUDE, LATITUDE, ACCURACY, ALTITUDE, SPEED, BEARING, TIME, DELTA0, DELTA1, DELTA2, DELTA3, DELTA4 };
+    protected enum WigetK { LONGITUDE, LATITUDE, ACCURACY, PROVIDER, ALTITUDE, SPEED, BEARING, TIME, DELTA0, DELTA1, DELTA2, DELTA3, DELTA4 };
     //
     private interface GetLocationProp { public String get(MainActivity me); }   // Until we can use real lambdas!
     private static class GetDeltaTimeProp implements GetLocationProp {
@@ -120,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements
                     , new GetLocationProp() { public String get(MainActivity me) { return String.valueOf(me.mCurrentLocation.getLongitude()); } } ),
             new ResIdSpec(WigetK.ACCURACY,   R.string.accuracy_label,    R.id.accuracy_text
                     , new GetLocationProp() { public String get(MainActivity me) { return me.mCurrentLocation.hasAccuracy() ? String.valueOf(me.mCurrentLocation.getAccuracy()) : ""; } } ),
+            new ResIdSpec(WigetK.PROVIDER,   R.string.provider_label,    R.id.provider_text
+                    , new GetLocationProp() { public String get(MainActivity me) { return me.mCurrentLocation.getProvider(); } } ),
             new ResIdSpec(WigetK.ALTITUDE,   R.string.altitude_label,    R.id.altitude_text
                     , new GetLocationProp() { public String get(MainActivity me) { return me.mCurrentLocation.hasAltitude() ? String.valueOf(me.mCurrentLocation.getAltitude()) : ""; } } ),
             new ResIdSpec(WigetK.SPEED,      R.string.speed_label,       R.id.speed_text
