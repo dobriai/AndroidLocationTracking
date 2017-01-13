@@ -21,7 +21,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -42,7 +45,6 @@ import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 
 /**
  * Getting Location Updates.
@@ -157,6 +159,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.da_toolbar);
+        setSupportActionBar(myToolbar);
 
         // Without this, any attempt to use sockets in the Main Thread will throw!
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -464,6 +468,13 @@ public class MainActivity extends AppCompatActivity implements
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        return true;
+    }
 
     /**
      * Stores activity data in the Bundle.

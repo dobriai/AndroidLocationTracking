@@ -31,4 +31,6 @@
     <string name="stop_updates">Stop updates</string>
     <string name="location_updated_message">Location updated</string>
     <string name="bad_host">No connection to host!</string>
+
+    <string name="app_settings">Settings</string>
 </resources>
