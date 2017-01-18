@@ -16,6 +16,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/da_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -33,119 +34,10 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <LinearLayout
+    <fragment android:name="net.eastpole.GPSUpdatesFragment"
+        android:id="@+id/gps_updates_fragment"
+        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/start_updates_button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:gravity="center"
-            android:onClick="startUpdatesButtonHandler"
-            android:text="@string/start_updates" />
-
-        <Button
-            android:id="@+id/stop_updates_button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/small_margin"
-            android:layout_marginStart="@dimen/small_margin"
-            android:enabled="false"
-            android:gravity="center"
-            android:onClick="stopUpdatesButtonHandler"
-            android:text="@string/stop_updates" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/latitude_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textSize="@dimen/default_text_size" />
-
-    <TextView
-        android:id="@+id/longitude_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textSize="@dimen/default_text_size" />
-
-    <TextView
-        android:id="@+id/accuracy_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textSize="@dimen/default_text_size" />
-
-    <TextView
-        android:id="@+id/provider_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textSize="@dimen/default_text_size" />
-
-    <TextView
-        android:id="@+id/altitude_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textSize="@dimen/default_text_size" />
-
-    <TextView
-        android:id="@+id/speed_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textSize="@dimen/default_text_size" />
-
-    <TextView
-        android:id="@+id/bearing_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textSize="@dimen/default_text_size" />
-
-    <TextView
-        android:id="@+id/last_update_time_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/small_margin"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textSize="@dimen/default_text_size" />
-
-    <TextView
-        android:id="@+id/last_delta_time0_text"
-        android:layout_width="wrap_content"  android:layout_height="wrap_content" android:layout_marginLeft="@dimen/small_margin" android:layout_marginStart="@dimen/small_margin" android:textSize="@dimen/default_text_size"
-        />
-    <TextView
-        android:id="@+id/last_delta_time1_text"
-        android:layout_width="wrap_content"  android:layout_height="wrap_content" android:layout_marginLeft="@dimen/small_margin" android:layout_marginStart="@dimen/small_margin" android:textSize="@dimen/default_text_size"
-        />
-    <TextView
-        android:id="@+id/last_delta_time2_text"
-        android:layout_width="wrap_content"  android:layout_height="wrap_content" android:layout_marginLeft="@dimen/small_margin" android:layout_marginStart="@dimen/small_margin" android:textSize="@dimen/default_text_size"
-        />
-    <TextView
-        android:id="@+id/last_delta_time3_text"
-        android:layout_width="wrap_content"  android:layout_height="wrap_content" android:layout_marginLeft="@dimen/small_margin" android:layout_marginStart="@dimen/small_margin" android:textSize="@dimen/default_text_size"
-        />
-    <TextView
-        android:id="@+id/last_delta_time4_text"
-        android:layout_width="wrap_content"  android:layout_height="wrap_content" android:layout_marginLeft="@dimen/small_margin" android:layout_marginStart="@dimen/small_margin" android:textSize="@dimen/default_text_size"
-        />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

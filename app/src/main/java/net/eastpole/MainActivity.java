@@ -17,7 +17,6 @@
 package net.eastpole;
 
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -25,9 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -42,26 +39,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.EnumMap;
 
-/**
- * Getting Location Updates.
- *
- * Demonstrates how to use the Fused Location Provider API to get updates about a device's
- * location. The Fused Location Provider is part of the Google Play services location APIs.
- *
- * For a simpler example that shows the use of Google Play services to fetch the last known location
- * of a device, see
- * https://github.com/googlesamples/android-play-location/tree/master/BasicLocation.
- *
- * This sample uses Google Play services, but it does not require authentication. For a sample that
- * uses Google Play services for authentication, see
- * https://github.com/googlesamples/android-google-accounts/tree/master/QuickStart.
- */
 public class MainActivity extends AppCompatActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+        ConnectionCallbacks, OnConnectionFailedListener, LocationListener
+{
 
     protected static final String TAG = "location-updates-sample";
 
@@ -87,70 +68,6 @@ public class MainActivity extends AppCompatActivity implements
     protected static final String UDP_HOST_NAME = "10.0.2.2";
     protected static final int mPort = 11000;   // Arbitrary port
 
-    // UI Widgets: Button-s.
-    protected Button mStartUpdatesButton;
-    protected Button mStopUpdatesButton;
-
-    // UI Widgets: TextView-s
-    protected enum WigetK { LONGITUDE, LATITUDE, ACCURACY, PROVIDER, ALTITUDE, SPEED, BEARING, TIME, DELTA0, DELTA1, DELTA2, DELTA3, DELTA4 };
-    //
-    private interface GetLocationProp { public String get(MainActivity me); }   // Until we can use real lambdas!
-    private static class GetDeltaTimeProp implements GetLocationProp {
-        GetDeltaTimeProp(int mIdx) { this.mIdx = mIdx; }
-        public String get(MainActivity me) {
-            return me.mUpdateTimeDeltas[mIdx] >= 0 ? String.format("%.3f s", me.mUpdateTimeDeltas[mIdx]/1000.0) : "";
-        }
-        private int mIdx;
-    }
-    private static class ResIdSpec {
-        ResIdSpec(WigetK mWigetK, int mLabelId, int mViewId, GetLocationProp mGetLocationProp)
-        {
-            this.mWigetK            = mWigetK;
-            this.mLabelId           = mLabelId;
-            this.mViewId            = mViewId;
-            this.mGetLocationProp   = mGetLocationProp;
-        }
-        public final WigetK mWigetK;
-        public final int mViewId;
-        public final int mLabelId;
-        public final GetLocationProp mGetLocationProp;
-    }
-    private static final ResIdSpec mResIdSpecs[] = {
-            new ResIdSpec(WigetK.LATITUDE,   R.string.latitude_label,    R.id.latitude_text
-                    , new GetLocationProp() { public String get(MainActivity me) { return String.valueOf(me.mCurrentLocation.getLatitude()); } } ),
-            new ResIdSpec(WigetK.LONGITUDE,  R.string.longitude_label,   R.id.longitude_text
-                    , new GetLocationProp() { public String get(MainActivity me) { return String.valueOf(me.mCurrentLocation.getLongitude()); } } ),
-            new ResIdSpec(WigetK.ACCURACY,   R.string.accuracy_label,    R.id.accuracy_text
-                    , new GetLocationProp() { public String get(MainActivity me) { return me.mCurrentLocation.hasAccuracy() ? String.valueOf(me.mCurrentLocation.getAccuracy()) : ""; } } ),
-            new ResIdSpec(WigetK.PROVIDER,   R.string.provider_label,    R.id.provider_text
-                    , new GetLocationProp() { public String get(MainActivity me) { return me.mCurrentLocation.getProvider(); } } ),
-            new ResIdSpec(WigetK.ALTITUDE,   R.string.altitude_label,    R.id.altitude_text
-                    , new GetLocationProp() { public String get(MainActivity me) { return me.mCurrentLocation.hasAltitude() ? String.valueOf(me.mCurrentLocation.getAltitude()) : ""; } } ),
-            new ResIdSpec(WigetK.SPEED,      R.string.speed_label,       R.id.speed_text
-                    , new GetLocationProp() { public String get(MainActivity me) { return me.mCurrentLocation.hasSpeed() ? String.valueOf(me.mCurrentLocation.getSpeed()) : ""; } } ),
-            new ResIdSpec(WigetK.BEARING,    R.string.bearing_label,     R.id.bearing_text
-                    , new GetLocationProp() { public String get(MainActivity me) { return me.mCurrentLocation.hasBearing() ? String.valueOf(me.mCurrentLocation.getBearing()) : ""; } } ),
-
-            new ResIdSpec(WigetK.TIME,       R.string.last_update_time_label,    R.id.last_update_time_text
-                    , new GetLocationProp() { public String get(MainActivity me) { return String.valueOf(DateFormat.getTimeInstance().format(new Date(me.mLastUpdateTime))); } } ),
-            new ResIdSpec(WigetK.DELTA0,     R.string.prev_update_time_label,    R.id.last_delta_time0_text, new GetDeltaTimeProp(0) ),
-            new ResIdSpec(WigetK.DELTA1,     R.string.prev_update_time_label,    R.id.last_delta_time1_text, new GetDeltaTimeProp(1) ),
-            new ResIdSpec(WigetK.DELTA2,     R.string.prev_update_time_label,    R.id.last_delta_time2_text, new GetDeltaTimeProp(2) ),
-            new ResIdSpec(WigetK.DELTA3,     R.string.prev_update_time_label,    R.id.last_delta_time3_text, new GetDeltaTimeProp(3) ),
-            new ResIdSpec(WigetK.DELTA4,     R.string.prev_update_time_label,    R.id.last_delta_time4_text, new GetDeltaTimeProp(4) ),
-    };
-    protected static class WidgetD {
-        WidgetD(String mLabelText, TextView mTextView, GetLocationProp mGetLocationProp) {
-            this.mLabelText         = mLabelText;
-            this.mTextView          = mTextView;
-            this.mGetLocationProp   = mGetLocationProp;
-        }
-        public final String mLabelText;
-        public final TextView mTextView;
-        public final GetLocationProp mGetLocationProp;
-    }
-    protected EnumMap<WigetK, WidgetD> mWidgetMap;
-
     protected Boolean mRequestingLocationUpdates;
     protected Long mLastUpdateTime;
     protected Long mUpdateTimeDeltas[] = new Long[5];
@@ -158,25 +75,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.main_activity);
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.da_toolbar);
         setSupportActionBar(myToolbar);
 
         // Without this, any attempt to use sockets in the Main Thread will throw!
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        // Locate the UI widgets.
-        mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
-        mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
-
-        mWidgetMap = new EnumMap<WigetK, WidgetD>(WigetK.class);
-        for (ResIdSpec resIdSpec : mResIdSpecs) {
-            mWidgetMap.put(resIdSpec.mWigetK, new WidgetD(
-                    getResources().getString(resIdSpec.mLabelId),
-                    (TextView) findViewById(resIdSpec.mViewId),
-                    resIdSpec.mGetLocationProp));
-        }
 
         mRequestingLocationUpdates = false;
         mLastUpdateTime = 0L;
@@ -204,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements
             if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
                         REQUESTING_LOCATION_UPDATES_KEY);
-                setButtonsEnabledState();
+//                setButtonsEnabledState();
             }
 
             // Update the value of mCurrentLocation from the Bundle and update the UI to show the
@@ -278,30 +185,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Handles the Start Updates button and requests start of location updates. Does nothing if
-     * updates have already been requested.
-     */
-    public void startUpdatesButtonHandler(View view) {
-        if (!mRequestingLocationUpdates) {
-            mRequestingLocationUpdates = true;
-            setButtonsEnabledState();
-            startLocationUpdates();
-        }
-    }
-
-    /**
-     * Handles the Stop Updates button, and requests removal of location updates. Does nothing if
-     * updates were not previously requested.
-     */
-    public void stopUpdatesButtonHandler(View view) {
-        if (mRequestingLocationUpdates) {
-            mRequestingLocationUpdates = false;
-            setButtonsEnabledState();
-            stopLocationUpdates();
-        }
-    }
-
-    /**
      * Requests location updates from the FusedLocationApi.
      */
     protected void startLocationUpdates() {
@@ -311,32 +194,14 @@ public class MainActivity extends AppCompatActivity implements
                 mGoogleApiClient, mLocationRequest, this);
     }
 
-    /**
-     * Ensures that only one button is enabled at any time. The Start Updates button is enabled
-     * if the user is not requesting location updates. The Stop Updates button is enabled if the
-     * user is requesting location updates.
-     */
-    private void setButtonsEnabledState() {
-        if (mRequestingLocationUpdates) {
-            mStartUpdatesButton.setEnabled(false);
-            mStopUpdatesButton.setEnabled(true);
-        } else {
-            mStartUpdatesButton.setEnabled(true);
-            mStopUpdatesButton.setEnabled(false);
-        }
+    private GPSUpdatesFragment getGPSUpdatesFragment() {
+        return (GPSUpdatesFragment) getFragmentManager().findFragmentById(R.id.gps_updates_fragment);
     }
 
-    /**
-     * Updates the latitude, the longitude, and the last location time in the UI.
-     */
     private void updateUI() {
-        for (EnumMap.Entry<WigetK, WidgetD> entry : mWidgetMap.entrySet()) {
-            WidgetD wd = entry.getValue();
-            if (wd.mGetLocationProp == null)
-                continue;
-
-            wd.mTextView.setText(String.format("%s: %s", wd.mLabelText, wd.mGetLocationProp.get(this)));
-        }
+        GPSUpdatesFragment frag = getGPSUpdatesFragment();
+        if (frag != null)
+            frag.updateUI();
     }
 
     private void sendUpdate2Server() {
@@ -474,6 +339,30 @@ public class MainActivity extends AppCompatActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                getFragmentManager().beginTransaction()
+//                        .replace(android.R.id.content, new SettingsFragment())
+                        .replace(R.id.da_root, new SettingsFragment())
+                        .addToBackStack(null)
+                        .commit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     /**
