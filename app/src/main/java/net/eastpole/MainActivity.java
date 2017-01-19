@@ -1,21 +1,7 @@
-/**
- * Copyright 2014 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package net.eastpole;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -78,8 +64,9 @@ public class MainActivity extends AppCompatActivity implements
 
         setContentView(R.layout.main_activity);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.da_toolbar);
-        setSupportActionBar(myToolbar);
+        getFragmentManager().beginTransaction()
+                .add(android.R.id.content, new GPSUpdatesFragment(), GPSUpdatesFragment.FRAGTAG)
+                .commit();
 
         // Without this, any attempt to use sockets in the Main Thread will throw!
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -195,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private GPSUpdatesFragment getGPSUpdatesFragment() {
-        return (GPSUpdatesFragment) getFragmentManager().findFragmentById(R.id.gps_updates_fragment);
+        return (GPSUpdatesFragment) getFragmentManager().findFragmentByTag(GPSUpdatesFragment.FRAGTAG);
     }
 
     private void updateUI() {
@@ -345,9 +332,14 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                getFragmentManager().beginTransaction()
-//                        .replace(android.R.id.content, new SettingsFragment())
-                        .replace(R.id.da_root, new SettingsFragment())
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//                Fragment oldFrag = getFragmentManager().findFragmentByTag(GPSUpdatesFragment.FRAGTAG);
+//                if (oldFrag != null) {
+//                    transaction.remove(oldFrag);
+//                }
+                transaction
+                        .replace(android.R.id.content, new SettingsFragment())
+//                        .replace(R.id.da_root, new SettingsFragment())
                         .addToBackStack(null)
                         .commit();
                 return true;

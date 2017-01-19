@@ -3,6 +3,7 @@ package net.eastpole;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import java.util.EnumMap;
  * create an instance of this fragment.
  */
 public class GPSUpdatesFragment extends Fragment {
+    protected static final String FRAGTAG = "FRAGTAG_GPSUpdatesFragment";
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -174,6 +176,9 @@ public class GPSUpdatesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gpsupdates, container, false);
 
+        Toolbar myToolbar = (Toolbar) view.findViewById(R.id.da_toolbar);
+        mMainActivity.setSupportActionBar(myToolbar);
+
         mStartUpdatesButton = (Button) view.findViewById(R.id.start_updates_button);
         mStopUpdatesButton = (Button) view.findViewById(R.id.stop_updates_button);
 
@@ -194,9 +199,6 @@ public class GPSUpdatesFragment extends Fragment {
             WidgetD widgetD = mWidgetMap.get(resIdSpec.mWigetK);
             widgetD.mTextView = (TextView) view.findViewById(resIdSpec.mViewId);
         }
-
-        TextView tv = (TextView) view.findViewById(R.id.latitude_text);
-        tv.setText(R.string.latitude_label);
 
         return view;
     }
