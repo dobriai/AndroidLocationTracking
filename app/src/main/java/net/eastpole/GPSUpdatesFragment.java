@@ -62,10 +62,10 @@ public class GPSUpdatesFragment extends Fragment {
             this.mGetLocationProp = mGetLocationProp;
         }
 
-        public final WigetK mWigetK;
-        public final int mViewId;
-        public final int mLabelId;
-        public final GetLocationProp mGetLocationProp;
+        private final WigetK mWigetK;
+        private final int mViewId;
+        private final int mLabelId;
+        private final GetLocationProp mGetLocationProp;
     }
 
     private static final ResIdSpec mResIdSpecs[] = {
