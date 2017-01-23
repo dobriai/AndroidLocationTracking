@@ -2,9 +2,32 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <EditTextPreference
-        android:dialogTitle="@string/dialog_title_gps_update_interval_pref"
         android:key="gps_update_interval_pref"
+        android:dialogTitle="@string/dialog_title_gps_update_interval_pref"
         android:summary="@string/summary_gps_update_interval_pref"
         android:title="@string/title_gps_update_interval_pref" />
+
+    <EditTextPreference
+        android:key="gps_fastest_update_interval_pref"
+        android:dialogTitle="Update GPS no faster than:"
+        android:summary="nn.n s"
+        android:title="Fastest GPS update interval"
+        />
+
+    <SwitchPreference
+        android:key="connect_to_svr_pref"
+        android:defaultValue="true"
+        android:disableDependentsState="false"
+        android:title="Connect to server"
+        android:summary="Send GPS updates to server, to share with your friends"
+        />
+
+    <EditTextPreference
+        android:key="server_name_pref"
+        android:dependency="connect_to_svr_pref"
+        android:dialogTitle="Server name:port"
+        android:summary="No server specified"
+        android:title="Server"
+        />
 
 </PreferenceScreen>
