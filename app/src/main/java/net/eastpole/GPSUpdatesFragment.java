@@ -35,10 +35,7 @@ public class GPSUpdatesFragment extends Fragment {
 
     private MainActivity mMainActivity;
 
-    protected enum WigetK {LATITUDE, LONGITUDE, ACCURACY, PROVIDER, ALTITUDE, SPEED, BEARING, TIME, DELTA0, DELTA1, DELTA2, DELTA3, DELTA4}
-
-    ;
-
+    protected enum WigetK {LATITUDE, LONGITUDE, ACCURACY, PROVIDER, ALTITUDE, SPEED, BEARING, TIME, DELTA0, DELTA1, DELTA2, DELTA3, DELTA4};
     //
     private interface GetLocationProp {
         public String get(MainActivity me);
