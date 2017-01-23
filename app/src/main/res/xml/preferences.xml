@@ -5,13 +5,16 @@
         android:key="gps_update_interval_pref"
         android:dialogTitle="@string/dialog_title_gps_update_interval_pref"
         android:summary="@string/summary_gps_update_interval_pref"
-        android:title="@string/title_gps_update_interval_pref" />
+        android:title="@string/title_gps_update_interval_pref"
+        android:inputType="number"
+        />
 
     <EditTextPreference
         android:key="gps_fastest_update_interval_pref"
         android:dialogTitle="Update GPS no faster than:"
         android:summary="nn.n s"
         android:title="Fastest GPS update interval"
+        android:inputType="number"
         />
 
     <SwitchPreference
@@ -28,6 +31,7 @@
         android:dialogTitle="Server name:port"
         android:summary="No server specified"
         android:title="Server"
+        android:inputType="textUri"
         />
 
 </PreferenceScreen>

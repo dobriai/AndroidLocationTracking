@@ -99,7 +99,12 @@ public class SettingsFragment extends PreferenceFragment
     private static void updateSummDeltaTime(EditTextPreference etp) {
         if (etp == null)
             return;
-        etp.setSummary(String.format("%d ms", Integer.parseInt(etp.getText())));
+        try {
+            Integer delta = Integer.parseInt(etp.getText());
+            etp.setSummary(String.format("%d ms", delta));
+        } catch (NumberFormatException ee) {
+            etp.setSummary("Invalid input!");
+        }
     }
 
     private void updatePrefSummary(Preference pref) {
